@@ -1,5 +1,7 @@
 # Launchpad
 
+### Spec. Plan. Run — with sub-agents.
+
 > Imagine a team of engineers working in shifts. Each new engineer arrives with no memory of the previous shift, no written spec to follow, and no idea which tasks can run at the same time.
 >
 > That's what building features with AI agents feels like today.
@@ -88,9 +90,23 @@ Two things led to building this.
 
 I was using spec-writing and task-organizing skills separately and kept thinking: why am I manually connecting these? The handoff between "spec is done" and "now organize tasks" and "now execute" was always me copy-pasting context and hoping nothing fell through the cracks. Each skill worked fine on its own, but the glue between them was... me.
 
-Then Anthropic published [Effective Harnesses for Long-Running Agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents). The article made something click. Agents need structured checkpointing, explicit task state, and recovery protocols to work reliably over long sessions. Sub-agents in isolated worktrees. Merge-back protocols. Context window recovery. It all made sense as the missing execution layer.
+Then Anthropic published [Effective Harnesses for Long-Running Agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents). The article made something click. Agents need structured checkpointing, explicit task state, and recovery protocols to work reliably over long sessions.
 
-So Launchpad connects the pieces: write a proper spec (no guessing), plan the work (with real dependency analysis), then hand it off to a fleet of sub-agents that can fail, retry, and recover without losing progress. The idea that got me was simple — what if the entire journey from "I want to build X" to "here's the working code" could be one continuous, structured pipeline?
+But the article's harness is a **single-agent, single-session-at-a-time** design. One agent wakes up, reads `claude-progress.txt`, does some work, saves state, and sleeps. No spec phase. No dependency analysis. No parallel execution.
+
+Launchpad extends that foundation in three directions:
+
+| | Anthropic's harness | Launchpad |
+|---|---|---|
+| Agents | Single agent per session | Controller + parallel sub-agents |
+| Execution | Sequential, one task at a time | Parallel via isolated git worktrees |
+| Spec phase | None (assumes you know what to build) | Iterative Q&A until zero ambiguity |
+| Task planning | None (flat task list) | Dependency graph, file conflict detection, wave assignment |
+| Session recovery | Progress file + git history | Same, plus orphaned worktree recovery and sub-agent state cleanup |
+
+The original article solved continuity. Launchpad adds clarity (spec), structure (plan), and speed (parallel sub-agents).
+
+So the idea was simple: what if the entire journey from "I want to build X" to "here's the working code" could be one continuous, structured pipeline?
 
 ## Design decisions
 
