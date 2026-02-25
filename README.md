@@ -75,6 +75,170 @@ You can also run each stage independently:
 | `/lp:run` | Start multi-agent execution |
 | `/lp:run status` | Check execution progress |
 
+## Example walkthrough
+
+Here's what a real session looks like. You type one command, and Launchpad walks you through the rest.
+
+### Start the pipeline
+
+```
+You: /launchpad "add a notification system with email and in-app channels"
+```
+
+### Stage 1: Spec
+
+Launchpad creates a draft spec and immediately asks clarifying questions:
+
+```
+Stage 1/3: Spec — Defining requirements clearly.
+
+Created: specs/notification-system.md (DRAFT)
+
+Questions requiring clarification:
+1. Should notifications be real-time (WebSocket) or polling-based?
+2. Which email provider — SES, SendGrid, or something else?
+3. Do users need per-channel opt-out (e.g., email off, in-app on)?
+4. Should notifications be persisted? If so, for how long?
+5. Are there notification types with different priorities (e.g., urgent vs. digest)?
+
+Use /lp:clarify to answer.
+```
+
+You answer:
+
+```
+You: /lp:clarify Q1: WebSocket for in-app, email is async.
+     Q2: SendGrid. Q3: Yes, per-channel opt-out.
+     Q4: Persist for 90 days. Q5: Two tiers — immediate and daily digest.
+```
+
+Launchpad updates the spec, finds no remaining questions:
+
+```
+Updated specs/notification-system.md:
+- Added WebSocket strategy for in-app channel
+- Added SendGrid integration to Technical Strategy
+- Added per-channel preference model
+- Added 90-day retention policy
+- Added immediate/digest priority tiers
+
+Remaining questions: None
+Spec is ready. Generating task breakdown...
+```
+
+### Gate 1 → 2: Task breakdown
+
+```
+Generated: specs/notification-system.tasks.md
+
+Tasks:
+1. Create notification model and repository
+2. Implement notification preference service
+3. Add SendGrid email channel adapter
+4. Add WebSocket in-app channel adapter
+5. Build notification dispatcher (routes by channel + priority)
+6. Add digest aggregation cron job
+7. Add REST API endpoints for notification CRUD
+8. Add REST API endpoints for preference management
+
+Please review the task list. Let me know if anything is missing
+or needs changes. If it looks good, we'll proceed to the next stage.
+```
+
+```
+You: Looks good. Proceed.
+```
+
+### Stage 2: Plan
+
+```
+Stage 2/3: Plan — Analyzing task dependencies and generating
+a parallel execution plan.
+
+Total 8 tasks organized into 4 waves.
+
+Wave 0 (parallel): task-001, task-002
+  → No dependencies. Model + preferences can be built simultaneously.
+
+Wave 1 (parallel): task-003, task-004, task-007, task-008
+  → All depend on task-001 (model). No file overlaps between them.
+
+Wave 2 (sequential): task-005
+  → Depends on task-003 + task-004 (both channel adapters).
+  → Modifies dispatcher — runs solo to avoid merge conflicts.
+
+Wave 3 (sequential): task-006
+  → Depends on task-005 (dispatcher must exist for digest routing).
+
+⚠ File overlap: task-007 and task-008 both modify src/app.module.ts
+  → Assigned to same wave but will run sequentially within the batch.
+
+Please review the execution plan. Let me know if you'd like to adjust
+the wave assignments or dependencies.
+```
+
+```
+You: Ship it.
+```
+
+### Gate 2 → 3: Pre-flight check
+
+```
+All tasks have context, files_hint, and validation commands.
+Everything is ready. Shall I start execution?
+```
+
+```
+You: Yes.
+```
+
+### Stage 3: Run
+
+```
+Stage 3/3: Run — Sub-agents are executing tasks in parallel.
+
+[SESSION-1] BATCH dispatching 2 tasks: [task-001, task-002]
+[SESSION-1] DISPATCH [task-001] agent=a1b2c3 worktree=harness-task-001
+[SESSION-1] DISPATCH [task-002] agent=d4e5f6 worktree=harness-task-002
+```
+
+Sub-agents work in isolated worktrees. As they finish:
+
+```
+Batch 1 complete: task-001 ✓, task-002 ✓
+
+[SESSION-1] BATCH dispatching 4 tasks: [task-003, task-004, task-007, task-008]
+[SESSION-1] DISPATCH [task-003] agent=g7h8i9 worktree=harness-task-003
+[SESSION-1] DISPATCH [task-004] agent=j0k1l2 worktree=harness-task-004
+[SESSION-1] DISPATCH [task-007] agent=m3n4o5 worktree=harness-task-007
+[SESSION-1] DISPATCH [task-008] agent=p6q7r8 worktree=harness-task-008
+```
+
+If something fails, Launchpad retries with error context:
+
+```
+Batch 2 complete: task-003 ✓, task-004 ✓, task-007 ✓, task-008 ✗ (TEST_FAIL)
+
+task-008 failed: preference endpoint returns 500 — missing dependency injection
+  for NotificationPreferenceService.
+Auto-retrying with error context...
+
+[SESSION-1] DISPATCH [task-008] agent=s9t0u1 worktree=harness-task-008 (retry 1/3)
+```
+
+After all waves complete:
+
+```
+Pipeline complete!
+- Spec: specs/notification-system.md (COMPLETED)
+- Tasks: 8/8 completed, 0 failed
+- Sessions: 1, Batches: 5
+- Total sub-agent dispatches: 10 (1 retry)
+
+Let me know if you'd like a code review.
+Shall I create a PR?
+```
+
 ## What's inside
 
 Launchpad is four skills that chain together:
