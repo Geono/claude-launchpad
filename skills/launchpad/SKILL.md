@@ -1,12 +1,6 @@
 ---
 name: launchpad
-description: >-
-  End-to-end development pipeline orchestrator. Guides the user through spec writing,
-  task breakdown, parallelization planning, and multi-agent execution — ensuring no phase
-  is skipped. Invokes launchpad-spec, launchpad-plan, and launchpad-run skills in sequence.
-  Triggers on "/launchpad", "/launchpad <feature description>", "build this feature",
-  "I want to build", or when the user wants to go from idea to implementation
-  with structured planning.
+description: "End-to-end development pipeline orchestrator. Guides through spec writing, task breakdown, parallelization planning, and multi-agent execution. Chains launchpad-spec, launchpad-plan, and launchpad-run in sequence. Triggers on /launchpad, build this feature, I want to build."
 ---
 
 # Launchpad

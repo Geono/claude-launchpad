@@ -1,12 +1,6 @@
 ---
 name: launchpad-plan
-description: >
-  Analyze a spec's breakdown/task list and produce a parallelization-aware task plan.
-  Reads task sections, analyzes dependency chains and file mutation overlaps, determines which
-  tasks can run in parallel vs sequentially, and assigns appropriate granularity. Use when
-  a spec has a task breakdown and needs decomposition before orchestrated execution.
-  Triggers on: "plan tasks for...", "decompose into tasks", "/lp:plan",
-  "/lp:plan <spec-name>", or when preparing a spec for parallel agent execution.
+description: "Analyze a spec's task list and produce a parallelization-aware execution plan. Reads task sections, analyzes dependency chains and file mutation overlaps, determines parallel vs sequential execution, and assigns wave groups. Triggers on /lp:plan."
 ---
 
 # Launchpad Plan

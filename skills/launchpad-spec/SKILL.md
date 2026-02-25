@@ -1,10 +1,6 @@
 ---
 name: launchpad-spec
-description: >-
-  Spec-driven development framework with iterative refinement. Orchestrates feature
-  development from intent to implementation via structured specs and task breakdown.
-  Triggers on "/lp:spec", "/lp:refine", "/lp:clarify", "/lp:tasks", "/lp:run-task",
-  "I want to build", "I want to add", "create spec", "spec-driven", "feature spec".
+description: "Spec-driven development framework with iterative refinement. Orchestrates feature development from intent to implementation via structured specs and task breakdown. Triggers on /lp:spec, /lp:refine, /lp:clarify, /lp:tasks, /lp:run-task."
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion, TodoWrite, Task
 ---
 
