@@ -1,0 +1,13 @@
+{
+  "name": "claude-launchpad",
+  "owner": {
+    "name": "kunkim"
+  },
+  "plugins": [
+    {
+      "name": "claude-launchpad",
+      "source": ".",
+      "description": "End-to-end autonomous development pipeline. Goes from idea to implementation via structured specs, dependency-aware task planning, and parallel multi-agent execution."
+    }
+  ]
+}
