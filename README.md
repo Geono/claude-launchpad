@@ -39,8 +39,11 @@ The whole thing survives session resets. State files track where you are, so `/l
 ### As a plugin
 
 ```bash
+# Step 1: Add the marketplace
 /plugin marketplace add Geono/claude-launchpad
-/plugin install claude-launchpad
+
+# Step 2: Install the plugin
+/plugin install claude-launchpad@claude-launchpad
 ```
 
 ### Manual
